@@ -1,3 +1,4 @@
+import { StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { FavoritesScreen } from "../screens/FavoritesScreen";
@@ -15,16 +16,7 @@ export const TabNavigator = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: COLORS.background,
-          borderTopWidth: 0,
-          elevation: 0,
-          shadowOpacity: 0,
-          height: SIZES.TAB_BAR_HEIGHT,
-          paddingBottom: SIZES.TAB_BAR_PADDING
-        },
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.inactive
+        tabBarStyle: styles.container
       }}
     >
       <Tab.Screen
@@ -66,3 +58,12 @@ export const AppNavigator = () => {
     </Stack.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: COLORS.background,
+    elevation: 0,
+    shadowOpacity: 0,
+    height: SIZES.TAB_BAR_HEIGHT
+  }
+});
