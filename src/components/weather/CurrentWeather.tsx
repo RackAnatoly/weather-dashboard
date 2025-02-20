@@ -6,36 +6,14 @@ import { SIZES } from "../../constants/sizes";
 
 interface CurrentWeatherProps {
   loading: boolean;
-  error?: string;
   data?: WeatherData;
-  onRetry: () => void;
 }
 
-export const CurrentWeather = ({
-  loading,
-  error,
-  data,
-  onRetry
-}: CurrentWeatherProps) => {
+export const CurrentWeather = ({ loading, data }: CurrentWeatherProps) => {
   if (loading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color={COLORS.primary} />
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.error}>{error}</Text>
-        <Ionicons
-          name="reload"
-          size={SIZES.ICON_LARGE}
-          color={COLORS.primary}
-          onPress={onRetry}
-          style={styles.retryIcon}
-        />
       </View>
     );
   }
@@ -77,7 +55,9 @@ export const CurrentWeather = ({
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    padding: SIZES.SPACING_L
+    padding: SIZES.SPACING_L,
+    flex: 1,
+    justifyContent: "center"
   },
   city: {
     fontSize: SIZES.FONT_XXL,

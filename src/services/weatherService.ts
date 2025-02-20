@@ -1,5 +1,4 @@
-import Constants from "expo-constants";
-import { ForecastData, WeatherData } from "../types/weather";
+import { WeatherData } from "../types/weather";
 import { ENV } from "../../env";
 
 const API_KEY = ENV.OPENWEATHER_API_KEY;
