@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     zIndex: 1,
-    marginVertical: SIZES.SPACING_XL
+    marginVertical: SIZES.SPACING_XXL
   },
   weatherInfo: {
     flex: 1,
