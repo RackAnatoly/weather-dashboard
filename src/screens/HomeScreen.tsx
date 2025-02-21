@@ -12,23 +12,23 @@ import { ErrorView } from "../components/common/ErrorView";
 export const HomeScreen = ({
   route
 }: NativeStackScreenProps<TabParamList, "Home">) => {
+  const { initialCoordinates } = route.params || {};
   const { loading, error, weatherData, forecastData, updateWeather } =
     useWeather();
   const { isFavorite, addToFavorites, removeFromFavorites, refreshFavorites } =
     useFavorites();
 
   useEffect(() => {
-    const initialCoordinates = route.params?.initialCoordinates;
     if (initialCoordinates) {
       updateWeather(initialCoordinates.lat, initialCoordinates.lon);
     } else if (!weatherData) {
       updateWeather();
     }
-  }, [updateWeather, route.params?.initialCoordinates, weatherData]);
+  }, [initialCoordinates]);
 
   useEffect(() => {
     refreshFavorites();
-  }, [refreshFavorites]);
+  }, [isFavorite]);
 
   const handleToggleFavorite = async () => {
     if (!weatherData) return;
