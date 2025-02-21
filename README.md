@@ -41,7 +41,12 @@ cd weather-app
 yarn install
 ```
 
-3. Create a .env file in the root directory and add your OpenWeatherMap API key:
+3. Create a env.ts file in the root directory and add your OpenWeatherMap API key:
+```bash
+export const ENV = {
+  OPENWEATHER_API_KEY: "API"
+};
+```
 ```
 OPENWEATHER_API_KEY=your_api_key_here
 ```
