@@ -37,7 +37,7 @@ yarn-error.*
 
 # misc
 .DS_Store
-.env
+env.ts
 
 # IDE
 .idea
