@@ -1,7 +1,14 @@
 import type { NavigatorScreenParams } from "@react-navigation/native";
 
 export type TabParamList = {
-  Home: undefined;
+  Home:
+    | {
+        initialCoordinates?: {
+          lat: number;
+          lon: number;
+        };
+      }
+    | undefined;
   Favorites: undefined;
 };
 

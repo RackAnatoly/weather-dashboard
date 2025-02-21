@@ -11,6 +11,7 @@ export const SIZES = {
   SPACING_L: 24,
   SPACING_XL: 32,
   SPACING_XXL: 40,
+  SPACING_XXXL: 48,
 
   // Typography
   FONT_XS: 12,

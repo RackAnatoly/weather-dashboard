@@ -8,7 +8,8 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
-  ScrollView
+  ScrollView,
+  Pressable
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,6 +27,8 @@ type WeatherDisplayProps = {
   weather: WeatherData;
   forecast: ForecastData[];
   onWeatherUpdate: (lat: number, lon: number) => Promise<void>;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 };
 
 const getWeatherIcon = (condition: string): keyof typeof Ionicons.glyphMap => {
@@ -48,7 +51,9 @@ const getWeatherIcon = (condition: string): keyof typeof Ionicons.glyphMap => {
 export const WeatherDisplay = ({
   weather,
   forecast,
-  onWeatherUpdate
+  onWeatherUpdate,
+  isFavorite,
+  onToggleFavorite
 }: WeatherDisplayProps) => {
   const handleCitySelect = async (city: CitySearchResult) => {
     try {
@@ -63,15 +68,15 @@ export const WeatherDisplay = ({
     WEATHER_GRADIENTS.default;
 
   return (
-    <LinearGradient colors={gradientColors} style={styles.container}>
+    <LinearGradient colors={gradientColors} style={styles.flex}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.keyboardAvoid}
+        style={styles.flex}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <Pressable style={styles.flex} onPress={Keyboard.dismiss}>
           <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
+            style={styles.flex}
+            contentContainerStyle={styles.flex}
             bounces={false}
             showsVerticalScrollIndicator={false}
           >
@@ -79,7 +84,22 @@ export const WeatherDisplay = ({
               <AutocompleteSearch onSelectCity={handleCitySelect} />
             </View>
             <View style={styles.weatherInfo}>
-              <Text style={styles.city}>{weather.city}</Text>
+              <View style={styles.cityContainer}>
+                <Text style={styles.city}>{weather.city}</Text>
+                <Pressable
+                  onPress={onToggleFavorite}
+                  style={({ pressed }) => [
+                    styles.favoriteButton,
+                    pressed && styles.favoriteButtonPressed
+                  ]}
+                >
+                  <Ionicons
+                    name={isFavorite ? "star" : "star-outline"}
+                    size={SIZES.ICON_MEDIUM}
+                    color={COLORS.white}
+                  />
+                </Pressable>
+              </View>
               <Ionicons
                 name={getWeatherIcon(weather.condition)}
                 size={SIZES.ICON_LARGE * 2}
@@ -91,24 +111,15 @@ export const WeatherDisplay = ({
             </View>
             <WeatherForecast forecast={forecast} />
           </ScrollView>
-        </TouchableWithoutFeedback>
+        </Pressable>
       </KeyboardAvoidingView>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  flex: {
     flex: 1
-  },
-  keyboardAvoid: {
-    flex: 1
-  },
-  scrollView: {
-    flex: 1
-  },
-  scrollContent: {
-    flexGrow: 1
   },
   searchContainer: {
     zIndex: 1,
@@ -121,12 +132,25 @@ const styles = StyleSheet.create({
     zIndex: 0,
     paddingBottom: Platform.OS === "ios" ? 0 : SIZES.SPACING_XL
   },
+  cityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: SIZES.SPACING_M
+  },
   city: {
     fontSize: SIZES.FONT_XXL,
     color: COLORS.white,
     fontWeight: "bold",
-    textAlign: "center",
-    marginVertical: SIZES.SPACING_M
+    textAlign: "center"
+  },
+  favoriteButton: {
+    marginLeft: SIZES.SPACING_M,
+    padding: SIZES.SPACING_M,
+    borderRadius: SIZES.SPACING_S
+  },
+  favoriteButtonPressed: {
+    opacity: 0.8
   },
   icon: {
     marginVertical: SIZES.SPACING_M

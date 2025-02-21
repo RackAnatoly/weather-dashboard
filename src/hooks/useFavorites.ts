@@ -10,9 +10,9 @@ export const useFavorites = () => {
 
   const loadFavorites = useCallback(async () => {
     try {
-      const stored = await AsyncStorage.getItem(FAVORITES_STORAGE_KEY);
-      if (stored) {
-        setFavorites(JSON.parse(stored));
+      const storedFavorites = await AsyncStorage.getItem(FAVORITES_STORAGE_KEY);
+      if (storedFavorites) {
+        setFavorites(JSON.parse(storedFavorites));
       }
     } catch (error) {
       console.error("Error loading favorites:", error);
@@ -21,41 +21,56 @@ export const useFavorites = () => {
     }
   }, []);
 
-  const addToFavorites = async (weather: WeatherData) => {
-    try {
-      const newFavorites = [...favorites, weather];
-      await AsyncStorage.setItem(
-        FAVORITES_STORAGE_KEY,
-        JSON.stringify(newFavorites)
-      );
-      setFavorites(newFavorites);
-      return true;
-    } catch (error) {
-      console.error("Error adding to favorites:", error);
-      return false;
-    }
-  };
-
-  const removeFromFavorites = async (cityName: string) => {
-    try {
-      const newFavorites = favorites.filter((fav) => fav.city !== cityName);
-      await AsyncStorage.setItem(
-        FAVORITES_STORAGE_KEY,
-        JSON.stringify(newFavorites)
-      );
-      setFavorites(newFavorites);
-      return true;
-    } catch (error) {
-      console.error("Error removing from favorites:", error);
-      return false;
-    }
-  };
-
-  const isFavorite = (cityName: string) => {
-    return favorites.some((fav) => fav.city === cityName);
-  };
-
   useEffect(() => {
+    loadFavorites();
+  }, [loadFavorites]);
+
+  const addToFavorites = useCallback(
+    async (city: WeatherData) => {
+      try {
+        const updatedFavorites = [...favorites, city];
+        await AsyncStorage.setItem(
+          FAVORITES_STORAGE_KEY,
+          JSON.stringify(updatedFavorites)
+        );
+        setFavorites(updatedFavorites);
+        return true;
+      } catch (error) {
+        console.error("Error adding to favorites:", error);
+        return false;
+      }
+    },
+    [favorites]
+  );
+
+  const removeFromFavorites = useCallback(
+    async (cityName: string) => {
+      try {
+        const updatedFavorites = favorites.filter(
+          (city) => city.city !== cityName
+        );
+        await AsyncStorage.setItem(
+          FAVORITES_STORAGE_KEY,
+          JSON.stringify(updatedFavorites)
+        );
+        setFavorites(updatedFavorites);
+        return true;
+      } catch (error) {
+        console.error("Error removing from favorites:", error);
+        return false;
+      }
+    },
+    [favorites]
+  );
+
+  const isFavorite = useCallback(
+    (cityName: string) => {
+      return favorites.some((city) => city.city === cityName);
+    },
+    [favorites]
+  );
+
+  const refreshFavorites = useCallback(() => {
     loadFavorites();
   }, [loadFavorites]);
 
@@ -64,6 +79,7 @@ export const useFavorites = () => {
     loading,
     addToFavorites,
     removeFromFavorites,
-    isFavorite
+    isFavorite,
+    refreshFavorites
   };
 };
