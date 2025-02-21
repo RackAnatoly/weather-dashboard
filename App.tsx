@@ -8,7 +8,7 @@ import { NavigationContainer } from "@react-navigation/native";
 export default function App() {
   return (
     <NavigationContainer>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["bottom"]}>
         <StatusBar style="auto" />
         <AppNavigator />
       </SafeAreaView>

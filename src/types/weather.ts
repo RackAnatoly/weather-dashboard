@@ -8,3 +8,10 @@ export interface WeatherData {
     lon: number;
   };
 }
+
+export interface CitySearchResult {
+  name: string;
+  country: string;
+  lat: number;
+  lon: number;
+}
