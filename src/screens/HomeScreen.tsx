@@ -6,7 +6,6 @@ import { COLORS } from "../constants/colors";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { TabParamList } from "../types/navigation";
 import { useFavorites } from "../hooks/useFavorites";
-import { useFocusEffect } from "@react-navigation/native";
 import { ErrorView } from "../components/common/ErrorView";
 
 export const HomeScreen = ({
@@ -52,7 +51,11 @@ export const HomeScreen = ({
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator
+          size="large"
+          color={COLORS.primary}
+          testID="weather-loading"
+        />
       </View>
     );
   }

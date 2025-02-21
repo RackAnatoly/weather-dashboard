@@ -6,9 +6,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  TouchableWithoutFeedback,
   Keyboard,
-  ScrollView,
   Pressable
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
