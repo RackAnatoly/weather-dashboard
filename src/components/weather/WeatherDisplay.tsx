@@ -74,15 +74,11 @@ export const WeatherDisplay = ({
         style={styles.flex}
       >
         <Pressable style={styles.flex} onPress={Keyboard.dismiss}>
-          <ScrollView
-            style={styles.flex}
-            contentContainerStyle={styles.flex}
-            bounces={false}
-            showsVerticalScrollIndicator={false}
-          >
+          <View style={styles.flex}>
             <View style={styles.searchContainer}>
               <AutocompleteSearch onSelectCity={handleCitySelect} />
             </View>
+
             <View style={styles.weatherInfo}>
               <View style={styles.cityContainer}>
                 <Text style={styles.city}>{weather.city}</Text>
@@ -100,6 +96,7 @@ export const WeatherDisplay = ({
                   />
                 </Pressable>
               </View>
+
               <Ionicons
                 name={getWeatherIcon(weather.condition)}
                 size={SIZES.ICON_LARGE * 2}
@@ -109,8 +106,11 @@ export const WeatherDisplay = ({
               <Text style={styles.temperature}>{weather.temperature}°C</Text>
               <Text style={styles.condition}>{weather.condition}</Text>
             </View>
-            <WeatherForecast forecast={forecast} />
-          </ScrollView>
+
+            <View style={styles.forecastContainer}>
+              <WeatherForecast forecast={forecast} />
+            </View>
+          </View>
         </Pressable>
       </KeyboardAvoidingView>
     </LinearGradient>
@@ -167,5 +167,8 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     textTransform: "uppercase",
     textAlign: "center"
+  },
+  forecastContainer: {
+    marginBottom: SIZES.SPACING_L
   }
 });

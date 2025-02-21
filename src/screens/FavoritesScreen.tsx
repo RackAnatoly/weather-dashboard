@@ -29,7 +29,6 @@ const FavoriteItem = ({ item, onPress, onRemove }: FavoriteItemProps) => (
       pressed && styles.itemPressed
     ]}
     onPress={onPress}
-    android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
   >
     <View style={styles.itemContent}>
       <View>
@@ -44,7 +43,6 @@ const FavoriteItem = ({ item, onPress, onRemove }: FavoriteItemProps) => (
             styles.removeButton,
             pressed && styles.removeButtonPressed
           ]}
-          android_ripple={{ color: "rgba(0, 0, 0, 0.1)", radius: 20 }}
         >
           <Ionicons
             name="trash-outline"
@@ -136,10 +134,9 @@ const styles = StyleSheet.create({
     padding: SIZES.SPACING_M
   },
   itemContainer: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
     borderRadius: 12,
     marginBottom: SIZES.SPACING_M,
-    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2

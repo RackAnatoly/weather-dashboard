@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useEffect } from "react";
 import { View, ActivityIndicator, StyleSheet, Text } from "react-native";
 import { WeatherDisplay } from "../components/weather/WeatherDisplay";
 import { useWeather } from "../hooks/useWeather";
@@ -7,6 +7,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { TabParamList } from "../types/navigation";
 import { useFavorites } from "../hooks/useFavorites";
 import { useFocusEffect } from "@react-navigation/native";
+import { ErrorView } from "../components/common/ErrorView";
 
 export const HomeScreen = ({
   route
@@ -16,22 +17,18 @@ export const HomeScreen = ({
   const { isFavorite, addToFavorites, removeFromFavorites, refreshFavorites } =
     useFavorites();
 
-  useFocusEffect(
-    useCallback(() => {
-      const initialCoordinates = route.params?.initialCoordinates;
-      if (initialCoordinates) {
-        updateWeather(initialCoordinates.lat, initialCoordinates.lon);
-      } else if (!weatherData) {
-        updateWeather();
-      }
-      refreshFavorites();
-    }, [
-      updateWeather,
-      route.params?.initialCoordinates,
-      refreshFavorites,
-      weatherData
-    ])
-  );
+  useEffect(() => {
+    const initialCoordinates = route.params?.initialCoordinates;
+    if (initialCoordinates) {
+      updateWeather(initialCoordinates.lat, initialCoordinates.lon);
+    } else if (!weatherData) {
+      updateWeather();
+    }
+  }, [updateWeather, route.params?.initialCoordinates, weatherData]);
+
+  useEffect(() => {
+    refreshFavorites();
+  }, [refreshFavorites]);
 
   const handleToggleFavorite = async () => {
     if (!weatherData) return;
@@ -40,6 +37,15 @@ export const HomeScreen = ({
       await removeFromFavorites(weatherData.city);
     } else {
       await addToFavorites(weatherData);
+    }
+  };
+
+  const handleRetry = () => {
+    const coordinates = route.params?.initialCoordinates;
+    if (coordinates) {
+      updateWeather(coordinates.lat, coordinates.lon);
+    } else {
+      updateWeather();
     }
   };
 
@@ -52,11 +58,7 @@ export const HomeScreen = ({
   }
 
   if (error) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.error}>{error}</Text>
-      </View>
-    );
+    return <ErrorView message={error} onRetry={handleRetry} />;
   }
 
   if (!weatherData || !forecastData) return null;

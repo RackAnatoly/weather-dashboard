@@ -1,19 +1,39 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { SIZES } from "../../constants/sizes";
 import { COLORS } from "../../constants/colors";
 
-interface ErrorViewProps {
+type ErrorViewProps = {
   message: string;
   onRetry: () => void;
-}
+};
 
 export const ErrorView = ({ message, onRetry }: ErrorViewProps) => {
   return (
     <View style={styles.container}>
+      <Ionicons
+        name="warning-outline"
+        size={SIZES.ICON_LARGE * 2}
+        color={COLORS.error}
+        style={styles.icon}
+      />
       <Text style={styles.message}>{message}</Text>
-      <TouchableOpacity style={styles.button} onPress={onRetry}>
-        <Text style={styles.buttonText}>Try Again</Text>
-      </TouchableOpacity>
+      <Pressable
+        style={({ pressed }) => [
+          styles.retryButton,
+          pressed && styles.retryButtonPressed
+        ]}
+        onPress={onRetry}
+      >
+        <Ionicons
+          name="refresh"
+          size={SIZES.ICON_MEDIUM}
+          color={COLORS.white}
+          style={styles.refreshIcon}
+        />
+        <Text style={styles.retryText}>Try Again</Text>
+      </Pressable>
     </View>
   );
 };
@@ -23,22 +43,34 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: SIZES.SPACING_M,
-    gap: SIZES.SPACING_M
+    padding: SIZES.SPACING_L
+  },
+  icon: {
+    marginBottom: SIZES.SPACING_M
   },
   message: {
     fontSize: SIZES.FONT_M,
+    color: COLORS.text,
     textAlign: "center",
-    color: COLORS.text
+    marginBottom: SIZES.SPACING_L
   },
-  button: {
+  retryButton: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: COLORS.primary,
     paddingHorizontal: SIZES.SPACING_L,
     paddingVertical: SIZES.SPACING_M,
-    borderRadius: 8
+    borderRadius: SIZES.SPACING_M
   },
-  buttonText: {
-    color: COLORS.text,
-    fontSize: SIZES.FONT_M
+  retryButtonPressed: {
+    opacity: 0.8
+  },
+  refreshIcon: {
+    marginRight: SIZES.SPACING_S
+  },
+  retryText: {
+    color: COLORS.white,
+    fontSize: SIZES.FONT_M,
+    fontWeight: "600"
   }
 });

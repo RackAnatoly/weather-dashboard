@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     margin: SIZES.SPACING_M,
     backgroundColor: COLORS.white,
     borderRadius: 8,
-    shadowColor: "#000",
+    shadowColor: COLORS.background,
     shadowOffset: {
       width: 0,
       height: 2
