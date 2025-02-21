@@ -1,4 +1,4 @@
-import { CitySearchResult, WeatherData } from "../types/weather";
+import { CitySearchResult, ForecastData, WeatherData } from "../types/weather";
 import { ENV } from "../../env";
 
 const API_KEY = ENV.OPENWEATHER_API_KEY;
@@ -62,5 +62,57 @@ export const searchCities = async (
   } catch (error) {
     console.error("Error searching cities:", error);
     return [];
+  }
+};
+
+export const getForecast = async (
+  lat: number,
+  lon: number
+): Promise<ForecastData[]> => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch forecast data");
+    }
+
+    const data = await response.json();
+
+    const dailyForecasts = data.list.reduce(
+      (acc: ForecastData[], item: any) => {
+        const timestamp = item.dt * 1000;
+        const date = new Date(timestamp).toISOString().split("T")[0];
+
+        const existingForecast = acc.find((forecast) => forecast.date === date);
+
+        if (!existingForecast) {
+          acc.push({
+            date,
+            minTemp: item.main.temp_min,
+            maxTemp: item.main.temp_max,
+            condition: item.weather[0].main,
+            icon: item.weather[0].icon
+          });
+        } else {
+          existingForecast.minTemp = Math.min(
+            existingForecast.minTemp,
+            item.main.temp_min
+          );
+          existingForecast.maxTemp = Math.max(
+            existingForecast.maxTemp,
+            item.main.temp_max
+          );
+        }
+
+        return acc;
+      },
+      []
+    );
+
+    return dailyForecasts.slice(0, 5);
+  } catch (error) {
+    throw new Error("Error fetching forecast data");
   }
 };

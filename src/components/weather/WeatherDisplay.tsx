@@ -7,18 +7,24 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
-  Keyboard
+  Keyboard,
+  ScrollView
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
-import { AutocompleteSearch } from "./AutocompleteSearch";
-import { getCurrentWeather } from "../services/weatherService";
-import { COLORS, WEATHER_GRADIENTS } from "../constants/colors";
-import { SIZES } from "../constants/sizes";
-import type { CitySearchResult, WeatherData } from "../types/weather";
+import { WeatherForecast } from "./WeatherForecast";
+import {
+  CitySearchResult,
+  ForecastData,
+  WeatherData
+} from "../../types/weather";
+import { COLORS, WEATHER_GRADIENTS } from "../../constants/colors";
+import { AutocompleteSearch } from "../AutocompleteSearch";
+import { SIZES } from "../../constants/sizes";
 
 type WeatherDisplayProps = {
   weather: WeatherData;
+  forecast: ForecastData[];
   onWeatherUpdate: (lat: number, lon: number) => Promise<void>;
 };
 
@@ -41,6 +47,7 @@ const getWeatherIcon = (condition: string): keyof typeof Ionicons.glyphMap => {
 
 export const WeatherDisplay = ({
   weather,
+  forecast,
   onWeatherUpdate
 }: WeatherDisplayProps) => {
   const handleCitySelect = async (city: CitySearchResult) => {
@@ -62,7 +69,12 @@ export const WeatherDisplay = ({
         style={styles.keyboardAvoid}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.inner}>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            bounces={false}
+            showsVerticalScrollIndicator={false}
+          >
             <View style={styles.searchContainer}>
               <AutocompleteSearch onSelectCity={handleCitySelect} />
             </View>
@@ -71,13 +83,14 @@ export const WeatherDisplay = ({
               <Ionicons
                 name={getWeatherIcon(weather.condition)}
                 size={SIZES.ICON_LARGE * 2}
-                color={COLORS.primary}
+                color={COLORS.white}
                 style={styles.icon}
               />
               <Text style={styles.temperature}>{weather.temperature}°C</Text>
               <Text style={styles.condition}>{weather.condition}</Text>
             </View>
-          </View>
+            <WeatherForecast forecast={forecast} />
+          </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </LinearGradient>
@@ -91,8 +104,11 @@ const styles = StyleSheet.create({
   keyboardAvoid: {
     flex: 1
   },
-  inner: {
+  scrollView: {
     flex: 1
+  },
+  scrollContent: {
+    flexGrow: 1
   },
   searchContainer: {
     zIndex: 1,

@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
 import { Platform } from "react-native";
 import * as Location from "expo-location";
-import { getCurrentWeather } from "../services/weatherService";
-import type { WeatherData } from "../types/weather";
+import { getCurrentWeather, getForecast } from "../services/weatherService";
+import type { WeatherData, ForecastData } from "../types/weather";
 
 type WeatherError = {
   location:
@@ -18,6 +18,7 @@ export const useWeather = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ErrorType>();
   const [weatherData, setWeatherData] = useState<WeatherData>();
+  const [forecastData, setForecastData] = useState<ForecastData[]>([]);
 
   const getLocation = async (): Promise<Location.LocationObject> => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -62,12 +63,16 @@ export const useWeather = () => {
         coordinates = await getLocation();
       }
 
-      const weather = await getCurrentWeather(
-        coordinates.coords.latitude,
-        coordinates.coords.longitude
-      );
+      const [weather, forecast] = await Promise.all([
+        getCurrentWeather(
+          coordinates.coords.latitude,
+          coordinates.coords.longitude
+        ),
+        getForecast(coordinates.coords.latitude, coordinates.coords.longitude)
+      ]);
 
       setWeatherData(weather);
+      setForecastData(forecast);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message as ErrorType);
@@ -83,6 +88,7 @@ export const useWeather = () => {
     loading,
     error,
     weatherData,
+    forecastData,
     updateWeather
   };
 };

@@ -1,17 +1,17 @@
 import React, { useEffect } from "react";
 import { View, ActivityIndicator, StyleSheet, Text } from "react-native";
-import { WeatherDisplay } from "../components/WeatherDisplay";
+import { WeatherDisplay } from "../components/weather/WeatherDisplay";
 import { useWeather } from "../hooks/useWeather";
 import { COLORS } from "../constants/colors";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { TabParamList } from "../types/navigation";
-import { CitySearchResult } from "../types/weather";
 
 export const HomeScreen = ({}: NativeStackScreenProps<
   TabParamList,
   "Home"
 >) => {
-  const { loading, error, weatherData, updateWeather } = useWeather();
+  const { loading, error, weatherData, forecastData, updateWeather } =
+    useWeather();
 
   useEffect(() => {
     updateWeather();
@@ -33,11 +33,15 @@ export const HomeScreen = ({}: NativeStackScreenProps<
     );
   }
 
-  if (!weatherData) return null;
+  if (!weatherData || !forecastData) return null;
 
   return (
     <View style={styles.container}>
-      <WeatherDisplay weather={weatherData} onWeatherUpdate={updateWeather} />
+      <WeatherDisplay
+        weather={weatherData}
+        forecast={forecastData}
+        onWeatherUpdate={updateWeather}
+      />
     </View>
   );
 };

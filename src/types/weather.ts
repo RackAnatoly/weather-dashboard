@@ -15,3 +15,11 @@ export interface CitySearchResult {
   lat: number;
   lon: number;
 }
+
+export interface ForecastData {
+  date: string;
+  minTemp: number;
+  maxTemp: number;
+  condition: string;
+  icon: string;
+}
