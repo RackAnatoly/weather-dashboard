@@ -4,15 +4,27 @@ import * as Location from "expo-location";
 import { getCurrentWeather } from "../services/weatherService";
 import type { WeatherData } from "../types/weather";
 
+type WeatherError = {
+  location:
+    | "Please enable location permissions to see weather in your area"
+    | "Unable to get your location. Please check if location services are enabled";
+  weather: "Unable to fetch weather data. Please try again";
+  unknown: "An unexpected error occurred";
+};
+
+type ErrorType = WeatherError[keyof WeatherError];
+
 export const useWeather = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<ErrorType>();
   const [weatherData, setWeatherData] = useState<WeatherData>();
 
   const getLocation = async (): Promise<Location.LocationObject> => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      throw new Error("Permission to access location was denied");
+      throw new Error(
+        "Please enable location permissions to see weather in your area" as WeatherError["location"]
+      );
     }
 
     const locationOptions: Location.LocationOptions = Platform.select({
@@ -29,25 +41,39 @@ export const useWeather = () => {
       }
     });
 
-    return Location.getCurrentPositionAsync(locationOptions);
+    try {
+      return await Location.getCurrentPositionAsync(locationOptions);
+    } catch {
+      throw new Error(
+        "Unable to get your location. Please check if location services are enabled" as WeatherError["location"]
+      );
+    }
   };
 
-  const fetchWeatherData = useCallback(async () => {
+  const updateWeather = useCallback(async (lat?: number, lon?: number) => {
     try {
       setLoading(true);
       setError(undefined);
 
-      const location = await getLocation();
+      let coordinates;
+      if (lat !== undefined && lon !== undefined) {
+        coordinates = { coords: { latitude: lat, longitude: lon } };
+      } else {
+        coordinates = await getLocation();
+      }
+
       const weather = await getCurrentWeather(
-        location.coords.latitude,
-        location.coords.longitude
+        coordinates.coords.latitude,
+        coordinates.coords.longitude
       );
 
       setWeatherData(weather);
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "An unexpected error occurred"
-      );
+      if (error instanceof Error) {
+        setError(error.message as ErrorType);
+      } else {
+        setError("An unexpected error occurred" as WeatherError["unknown"]);
+      }
     } finally {
       setLoading(false);
     }
@@ -57,6 +83,6 @@ export const useWeather = () => {
     loading,
     error,
     weatherData,
-    fetchWeatherData
+    updateWeather
   };
 };

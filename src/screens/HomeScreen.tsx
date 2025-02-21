@@ -1,21 +1,21 @@
 import React, { useEffect } from "react";
 import { View, ActivityIndicator, StyleSheet, Text } from "react-native";
-import { useWeather } from "../hooks/useWeather";
 import { WeatherDisplay } from "../components/WeatherDisplay";
+import { useWeather } from "../hooks/useWeather";
 import { COLORS } from "../constants/colors";
-import { SIZES } from "../constants/sizes";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { TabParamList } from "../types/navigation";
+import { CitySearchResult } from "../types/weather";
 
 export const HomeScreen = ({}: NativeStackScreenProps<
   TabParamList,
   "Home"
 >) => {
-  const { loading, error, weatherData, fetchWeatherData } = useWeather();
+  const { loading, error, weatherData, updateWeather } = useWeather();
 
   useEffect(() => {
-    fetchWeatherData();
-  }, [fetchWeatherData]);
+    updateWeather();
+  }, [updateWeather]);
 
   if (loading) {
     return (
@@ -33,9 +33,11 @@ export const HomeScreen = ({}: NativeStackScreenProps<
     );
   }
 
+  if (!weatherData) return null;
+
   return (
     <View style={styles.container}>
-      {weatherData && <WeatherDisplay weather={weatherData} />}
+      <WeatherDisplay weather={weatherData} onWeatherUpdate={updateWeather} />
     </View>
   );
 };
@@ -52,6 +54,6 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
     textAlign: "center",
-    padding: SIZES.SPACING_M
+    padding: 16
   }
 });

@@ -1,5 +1,14 @@
 import React from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { AutocompleteSearch } from "./AutocompleteSearch";
@@ -10,7 +19,7 @@ import type { CitySearchResult, WeatherData } from "../types/weather";
 
 type WeatherDisplayProps = {
   weather: WeatherData;
-  onWeatherUpdate?: (weather: WeatherData) => void;
+  onWeatherUpdate: (lat: number, lon: number) => Promise<void>;
 };
 
 const getWeatherIcon = (condition: string): keyof typeof Ionicons.glyphMap => {
@@ -36,8 +45,7 @@ export const WeatherDisplay = ({
 }: WeatherDisplayProps) => {
   const handleCitySelect = async (city: CitySearchResult) => {
     try {
-      const weatherData = await getCurrentWeather(city.lat, city.lon);
-      onWeatherUpdate?.(weatherData);
+      await onWeatherUpdate(city.lat, city.lon);
     } catch (error) {
       Alert.alert("Error", "Failed to fetch weather data for selected city.");
     }
@@ -49,26 +57,41 @@ export const WeatherDisplay = ({
 
   return (
     <LinearGradient colors={gradientColors} style={styles.container}>
-      <View style={styles.searchContainer}>
-        <AutocompleteSearch onSelectCity={handleCitySelect} />
-      </View>
-      <View style={styles.weatherInfo}>
-        <Text style={styles.city}>{weather.city}</Text>
-        <Ionicons
-          name={getWeatherIcon(weather.condition)}
-          size={SIZES.ICON_LARGE * 2}
-          color={COLORS.white}
-          style={styles.icon}
-        />
-        <Text style={styles.temperature}>{weather.temperature}°C</Text>
-        <Text style={styles.condition}>{weather.condition}</Text>
-      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoid}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.inner}>
+            <View style={styles.searchContainer}>
+              <AutocompleteSearch onSelectCity={handleCitySelect} />
+            </View>
+            <View style={styles.weatherInfo}>
+              <Text style={styles.city}>{weather.city}</Text>
+              <Ionicons
+                name={getWeatherIcon(weather.condition)}
+                size={SIZES.ICON_LARGE * 2}
+                color={COLORS.primary}
+                style={styles.icon}
+              />
+              <Text style={styles.temperature}>{weather.temperature}°C</Text>
+              <Text style={styles.condition}>{weather.condition}</Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1
+  },
+  keyboardAvoid: {
+    flex: 1
+  },
+  inner: {
     flex: 1
   },
   searchContainer: {
@@ -79,7 +102,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 0
+    zIndex: 0,
+    paddingBottom: Platform.OS === "ios" ? 0 : SIZES.SPACING_XL
   },
   city: {
     fontSize: SIZES.FONT_XXL,
